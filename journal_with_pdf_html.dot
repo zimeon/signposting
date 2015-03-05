@@ -1,0 +1,11 @@
+digraph J1 {
+  DOI [ style=filled ]
+  DOI -> "Splash Page" [ style=dashed, label="conneg 303\ntext/html" ]
+  DOI -> "RDF" [ style=dashed, label="conneg 303\ntext/turtle" ]
+  "Splash Page" -> PDF  [ style=dashed, label="HTML\nlink" ]
+  "Splash Page" -> HTML  [ style=dashed, label="HTML\nlink" ]
+  "Splash Page" -> DOI [ label="canonical " ]
+  "Splash Page" -> DOI [ label="describes " ]
+  "PDF" -> "Splash Page" [ label="collection" ]
+  "HTML" -> "Splash Page" [ label="collection" ]
+}

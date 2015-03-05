@@ -1,0 +1,24 @@
+digraph PLOSCI {
+  DOI [ style=filled ]
+  DOI -> "Splash_Page" [ style=dashed, label="conneg 303\ntest/html" ]
+  DOI -> "RDF" [ style=dashed, label="conneg 303\ntest/turtle" ]
+  "DOI.img" [ style=filled ]
+  "DOI.img" -> "Splash_Page#img" [ style=dashed, label="conneg 303\ntest/html" ]
+  "DOI.img" -> "RDF.img" [ style=dashed, label="conneg 303\ntest/turtle" ]
+  "Splash_Page" -> PDF  [ label="item" ]
+  "Splash_Page" -> HTML  [ label="item" ]
+  "Splash_Page" -> PDF  [ style=dashed, label="HTML\nlink" ]
+  "Splash_Page" -> HTML  [ style=dashed, label="HTML\nlink" ]
+  PDF -> HTML [ label="alternate" ]
+  HTML -> PDF [ label="alternate" ]
+  "Splash_Page" -> DOI [ label="canonical " ]
+  "Splash_Page" -> DOI [ label="describes " ]
+  "PDF" -> "Splash_Page" [ label="collection" ]
+  "HTML" -> "Splash_Page" [ label="collection" ]
+  "Splash_Page#img" -> "DOI.img" [ label="canonical " ]
+  "Splash_Page#img" -> "DOI.img" [ label="describes " ]
+  "Splash_Page#img" -> "IMG" [ label="HTML\nimg" ]
+  "Splash_Page#img" -> "IMG" [ label="item" ]
+  { rank = "same" {DOI "DOI.img"} }
+  { rank = "same" {PDF HTML} }
+}
