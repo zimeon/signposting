@@ -117,6 +117,9 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         # Top-level index page?
         if (path == '/'):
             self.index_page()
+        elif (len(words)==1 and
+            words[0] in self.graphs):
+            self.graph_index_page(self.graphs[words[0]])
         # CSS?
         elif (path == '/css/graphserver.css'):
             self.read_file('.'+path)
@@ -128,7 +131,7 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             if (words[1] in self.graphs[words[0]].nodes):
                 self.build_node(graph, graph.nodes[words[1]])
             elif (words[1]=='svg'):
-                self.read_file(graph.svg)
+                self.read_and_link_svg(graph.svg, graph)
         else:
             raise NotFound
 
@@ -149,22 +152,41 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def index_page(self):
         """Sets content for top-level index page
         """
-        content = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n'
-        content += "<html>\n<head>\n"
+        content = "<html>\n<head>\n"
         content += "<title>Signposting test server</title>\n"
         content += '<link rel="stylesheet" href="/css/graphserver.css">\n</head>\n'
         content += "<body>\n<h1>Signposting test server</h1>\n\n"
         for graph_name in self.graphs:
             graph = self.graphs[graph_name]
             egn = cgi.escape(graph_name)
-            content += "<h3>Graph: %s </h3>\n\n<ul>\n" % (egn)
+            content += '<h3><a href="/%s/">Scenario: %s</a></h3>\n\n' % (egn,egn)
             if (graph.svg):
                 content += "<a href=\"/%s/svg\"/>svg</a>\n" % (egn)
+            content += '<ul>\n'
             for node_name in sorted(graph.nodes):
                 n = graph.nodes[node_name]
                 enn = cgi.escape(n.name)
                 content += "<li><a href=\"/%s/%s\">%s</a></li>\n" % (egn,enn,enn)
             content += "</ul>\n\n"
+        content += "</body>\n</html>\n"
+        self.content = content
+
+    def graph_index_page(self, graph):
+        """Sets content for top-level index page
+        """
+        content = "<html>\n<head>\n"
+        content += "<title>Signposting test server - %s</title>\n" % (graph.name)
+        content += '<link rel="stylesheet" href="/css/graphserver.css">\n</head>\n'
+        egn = cgi.escape(graph.name)
+        content += '<body>\n<h1>Scenario: %s</h1>\n\n' % (egn)
+        if (graph.svg):
+            content += '<object type="image/svg+xml" data="/%s/svg">Your browser does not support SVG</object>\n' % (graph.name)
+        content += '<ul>\n'
+        for node_name in sorted(graph.nodes):
+            n = graph.nodes[node_name]
+            enn = cgi.escape(n.name)
+            content += "<li><a href=\"/%s/%s\">%s</a></li>\n" % (egn,enn,enn)
+        content += "</ul>\n\n"
         content += "</body>\n</html>\n"
         self.content = content
 
@@ -273,6 +295,33 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         else:
             return ""
 
+    def read_and_link_svg(self, file, graph):
+        """ Read SVG and mark up all nodes as links to resources in graph
+
+        This is a svg-scrape fudge and relies upon the formatting of the
+        svg output from dot. Likely fragile... but expedient ;-)
+        """
+        try:
+            f = open(file,'r')
+        except Exception as e:
+            self.log_message("read_and_link_svg: Failed: %s" % (str(e)))
+            raise NotFound
+        self.content = ""
+        in_link = False 
+        for line in f:
+            m = re.match(r'<!-- ([^-]+) -->', line)
+            if (m):
+                if (in_link):
+                    in_link = False
+                    self.content += "</a>\n"
+                name = m.group(1)
+                name = re.sub(r'(\\n|\s+)', '_', name) #normalize
+                if (name in graph.nodes):
+                    in_link = True
+                    line += '<a xlink:href="/%s/%s">\n' % (graph.name, name)
+            self.content += line
+        f.close()
+
     def read_file(self, file):
         """Read specified into self.content
 
@@ -293,7 +342,7 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         Just a dummy version of the node info for amusement
         """
-        turtle =  "@prefix dc: <http://purl.org/dc/elements/1.1/> . .\n"
+        turtle =  "@prefix dc: <http://purl.org/dc/elements/1.1/> .\n"
         turtle += "@prefix x: <http://example.org/terms/> .\n\n"
         turtle += '[ dc:title    "%s" ;\n' % node.name
         turtle += '  x:mime_type "%s" ;\n' % str(node.mime_type)
