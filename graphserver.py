@@ -7,6 +7,7 @@ Simeon Warner, 2015
 """
 
 import glob
+import logging
 import optparse
 import os.path
 import re
@@ -28,8 +29,13 @@ def main():
                               usage='usage: %prog [options] [directory] (-h for help)')
     p.add_option('--port', '-p', action='store', type=int, default=DEFAULT_PORT,
                  help='port to run server on (default %default)')
+    p.add_option('--verbose', '-v', action='store_true',
+                 help='verbose output')
 
     (args, dirs) = p.parse_args()
+
+    level = logging.INFO if args.verbose else logging.WARN
+    logging.basicConfig(level=level)
 
     # Use either current directory or one specified as base_dir
     base_dir = os.getcwd()
@@ -41,7 +47,7 @@ def main():
     # Read graphs
     graphs = {}
     for dot_file in (glob.glob("%s/*.dot" % base_dir)):
-        print "\nLoading %s..." % (dot_file) 
+        print "Loading %s..." % (dot_file) 
         g = Graph()
         g.parse(dot_file)
         if (g.name in graphs):
@@ -56,9 +62,10 @@ def run(HandlerClass, ServerClass, port, graphs):
     server_address = ('localhost', port)
     HandlerClass.protocol_version = protocol
     HandlerClass.graphs = graphs
+    HandlerClass.base_uri = "http://%s:%d" % server_address
     httpd = ServerClass(server_address, HandlerClass)
     sa = httpd.socket.getsockname()
-    print "Serving HTTP on %s port %s..." % sa
+    print "Serving HTTP on %s port %d..." % sa
     httpd.serve_forever()
 
 if __name__ == '__main__':

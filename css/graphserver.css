@@ -1,0 +1,12 @@
+/* graphserver css */
+
+body {
+ font-family: sans-serif;
+ color: #000000;
+ background: white;
+}
+
+p.error {
+ font-weight: bold;
+ color: #AA0000;
+}
