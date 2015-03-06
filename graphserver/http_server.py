@@ -160,7 +160,7 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             content += "<h3>Graph: %s </h3>\n\n<ul>\n" % (egn)
             if (graph.svg):
                 content += "<a href=\"/%s/svg\"/>svg</a>\n" % (egn)
-            for node_name in graph.nodes:
+            for node_name in sorted(graph.nodes):
                 n = graph.nodes[node_name]
                 enn = cgi.escape(n.name)
                 content += "<li><a href=\"/%s/%s\">%s</a></li>\n" % (egn,enn,enn)
@@ -206,9 +206,11 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.build_turtle(node)
         else: #assume text/plain
             self.content=self.node_info(node)
-        for rel in node.links:
-            uri = self.full_uri(node.links[rel])
-            self.response_headers.append(['Link','<%s>; rel="%s"' % (uri,rel)])
+        for link in node.links:
+            (rel,dst,mime_type)=link
+            uri = self.full_uri(dst)
+            mime_type_str = ('; type="%s"' % (mime_type)) if (mime_type) else ''
+            self.response_headers.append(['Link','<%s>; rel="%s"%s' % (uri,rel,mime_type_str)])
 
     def node_info(self, node):
         """Return preformatted node information string"""
@@ -255,18 +257,17 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             warnings.append("MIME type mismatch: %s vs %s" %
                             (frag_node.mime_type, parent_node.mime_type))
         # links should be the same
-        all_keys = set()
-        for k in frag_node.links:
-            all_keys.add(k)
-        for k in parent_node.links:
-            all_keys.add(k)
-        for k in all_keys:
-            if (k not in frag_node.links):
-                warnings.append("Link rel=\"%s\" specified for parent but not fragment" % (k))
-            elif (k not in parent_node.links):
-                warnings.append("Link rel=\"%s\" specified for fragment but not parent" % (k))
-            elif (frag_node.links[k] != parent_node.links[k]):
-                warnings.append("Link rel=\"%s\" has different destinations in parent and fragment" % (k))
+        links = {}
+        for l in frag_node.links:
+            links[str(l)]='fragment'
+        for l in parent_node.links:
+            s=str(l)
+            if (s in links):
+                links.delete(s);
+            else:
+                links[s]='parent'
+        for s in sorted(links):
+            warnings.append("Link %s specified only in %s" % (s,links[s]))
         if (warnings):
             return "<p class=\"error\">WARNINGS:<br/>" + "<br/>\n".join(warnings) + "</p>\n"
         else:

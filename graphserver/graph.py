@@ -18,7 +18,7 @@ class Node(object):
         self.name = name
         self.mime_type = None
         self.conneg = {}
-        self.links = {}
+        self.links = []
         self.html_links = []
         self.html_imgs = []
 
@@ -71,10 +71,14 @@ class Graph(object):
             elif (re.match('html\s+img',label,re.I)):
                 src.html_imgs.append(dst_name)
             else:
-                # assume space separated set of links
-                for rel in label.split():
-                    self.log.info("%s rel=\"%s\" %s" % (src.name,rel,dst_name))
-                    src.links[rel]=dst_name
+                # assume space separated set of links (last word might me mime type)
+                words = label.split()
+                mime_type = None
+                if (re.match(r'\w+/\w+$',words[-1])):
+                    mime_type = words.pop()
+                for rel in words:
+                    self.log.info("%s rel=\"%s\" %s %s" % (src.name,rel,dst_name,mime_type))
+                    src.links.append([rel,dst_name,mime_type])
 
             # Do we have an svg file for this graph?
             svg_file = os.path.splitext(file)[0] + '.svg'
@@ -102,12 +106,12 @@ class Graph(object):
         return(self.nodes[node_name])
 
     def normalize_name(self, name):
-        """Normalize name in pydot data
+        """Normalize a node name in pydot data
 
-        Remove quotes, convert space to underscore
+        Remove quotes, convert spaces and newlines to underscore
         """
         name = re.sub( r'"', '', name )
-        name = re.sub( r'\s+', '_', name )
+        name = re.sub( r'(\s|\\n)+', '_', name )
         return(name)
 
     def normalize_label(self, name):
