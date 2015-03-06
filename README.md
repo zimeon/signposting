@@ -2,7 +2,9 @@
 
 _How do we link scholarly information on the web in a way that humans and machines can find their way around?_
 
-We are moving to a world with most scholarly information on the web and toward common use of identifiers for works/instances of both papers and data (CrossRef and DataCite DOIs in particular), and for people (ORCID). There are initiatives in versioning and connection to independent archives (Memento), and in annotation (W3C OA and Hypothes.is). Work on the semantic web is shifting to a more pactical focus on linked open data (including LDP and JSON-LD). The problem is that there are very inconsistent linking practices and when a machine or user gets to a resource (URI), it is often hard to work out _what_ the resource is, and what the _context_ is. There are many web standards that might help with this but they often solve only part of the problem, are little understood and inconsistently used. Can we work out patterns of linking, using HTTP Link headers in particular, that would help facilitate some key use case?
+We are moving to a world with most scholarly information on the web and toward common use of identifiers for works/instances of both papers and data (CrossRef and DataCite DOIs in particular), and for people (ORCID). There are initiatives in versioning and connection to independent archives (Memento), and in annotation (W3C OA and Hypothes.is). Work on the semantic web is shifting to a more pactical focus on linked open data (including LDP and JSON-LD). A persistent problem is that there are very inconsistent linking practices and when a machine or user gets to a particular resource, it is often hard to work out _what_ the resource is, and what the _context_ is. There are several web standards that might help with this but they often solve only part of the problem, are little understood and inconsistently used. Can we work out patterns of linking, using HTTP Link headers in particular, that would help solve so key use cases?
+
+*WARNING - EARLY THOUGHTS, SKETCHY DRAFTS*
 
 ## Background
 
@@ -26,13 +28,8 @@ We are moving to a world with most scholarly information on the web and toward c
 
 3. Crawler with preferred formats - look for rel="alternate" links to preferred formats and understand that content in different formats is equivalent. (Note that alternate in intended to be transitive per <http://www.w3.org/TR/html5/links.html#rel-alternate>).
 
-## Scenarios
+## Where now?
 
-### DOI, splash page, full-text
-
-This is the basic journal publication scenario with the possibility of more than one full-text format (perhaps HTML and PDF).
-
-![journal_with_pdf_html.svg]
-
-### 
+  * [Scenarios with possible link patterns](scenarios.md)
+  * [Playpen for exploring scenarios](graphserver.md)
 
