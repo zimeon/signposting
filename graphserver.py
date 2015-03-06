@@ -17,7 +17,7 @@ from graphserver.http_server import GSHTTPRequestHandler
 from graphserver.graph import Graph
 from graphserver.html_wrapper import HtmlWrapper
 
-DEFAULT_PORT = 9999
+DEFAULT_PORT = 9876
 
 def main():
 
