@@ -8,4 +8,6 @@ digraph J1 {
   "Splash Page" -> DOI [ label="describes " ]
   "PDF" -> "Splash Page" [ label="collection" ]
   "HTML" -> "Splash Page" [ label="collection" ]
+  PDF -> HTML [ label="alternate\ntext/html" ]
+  HTML -> PDF [ label="alternate\napplication/pdf" ]
 }

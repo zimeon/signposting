@@ -1,0 +1,10 @@
+digraph DLIB {
+  DOI [ style=filled ]
+  DOI -> "HTML Article" [ style=dashed, label="conneg 303\ntext/html" ]
+  DOI -> "HTML Article" [ label="describedby\ntext/html" ]
+  DOI -> RDF [ style=dashed, label="conneg 303\ntext/turtle" ]
+  DOI -> RDF [ label="describedby\ntext/turtle" ]
+  "HTML Article" -> DOI [ label="canonical\ndescribes" ]
+  RDF -> DOI [ label="describes" ]
+  "HTML Article" -> "HTML Article"  [ label="item" ]
+}
