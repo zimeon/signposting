@@ -1,4 +1,4 @@
-digraph JOURNAL1 {
+digraph JOURNAL2 {
   DOI [ style=filled ]
   DOI -> "Splash Page" [ style=dashed, label="conneg 303\ntext/html" ]
   DOI -> "Splash Page" [ label="describedby\ntext/html" ]
@@ -14,4 +14,7 @@ digraph JOURNAL1 {
   PDF -> HTML [ label="alternate\ntext/html" ]
   HTML -> PDF [ label="alternate\napplication/pdf" ]
   { rank=same PDF HTML }
+  HTML -> IMG [ label="HTML\nimg" ]
+  HTML -> IMG [ label="item" ]
+  IMG -> HTML [ label="collection" ]
 }
