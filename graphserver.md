@@ -9,7 +9,7 @@ this to work a number for formatting rules must be followed in these
 `dot` files.
 
 This server is written in Python and based around the standard
-[SimpleHTTPServer](https://docs.python.org/2/library/SimpleHTTPServer)
+[SimpleHTTPServer](https://docs.python.org/2/library/simplehttpserver.html)
 module. This is experimental code that is *not suitable for 
 production use or for expose outside of a firewall*. Buyer beware! 
 
