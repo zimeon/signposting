@@ -6,6 +6,12 @@ This page is a set of linking scenarios for [signposting the scholarly web](READ
 
 ![Journal with PDF and HTML](journal_with_pdf_html.png)
 
+## Generic DOI for journal article with PDF and HTML, where the HTML version has an included image
+
+Q. Should the image be part of the `collection` from the splash page, or a sub-`collection` as shown?
+
+![Journal with PDF and HTML inc image](journal_with_pdf_html_img.png)
+
 ## DLib article example, no splash page
 
 [DLib](http://dlib.org/) is unusual in that articles are HTML and there is no separate splash or landing page.
