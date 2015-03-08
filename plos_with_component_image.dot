@@ -16,10 +16,10 @@ digraph PLOSCI {
   DOI -> "Splash Page" [ label="describedby" ]
   "PDF" -> "Splash Page" [ label="collection" ]
   "HTML" -> "Splash Page" [ label="collection" ]
-# These do not work as would be attached to "Splash Page"
-#  "Splash Page#img" -> "DOI.img" [ label="canonical,\ndescribes" ]
+  "Splash Page#img" -> "DOI.img" [ label="canonical,\ndescribes" ]
   "Splash Page#img" -> "IMG" [ label="HTML\nimg" ]
   "Splash Page#img" -> "IMG" [ label="item" ]
+  "Splash Page#img" -> "Splash Page" [ style=dotted, label="implied\nis-part-of" ] 
   IMG -> "Splash Page#img" [ label="collection" ]
   { rank = "same" {DOI "DOI.img"} }
   { rank = "same" {PDF HTML} }
