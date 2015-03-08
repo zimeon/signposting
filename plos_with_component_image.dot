@@ -22,5 +22,6 @@ digraph PLOSCI {
   "Splash Page#img" -> "Splash Page" [ style=dotted, label="implied\nis-part-of" ] 
   IMG -> "Splash Page#img" [ label="collection" ]
   { rank = "same" {DOI "DOI.img"} }
+  { rank = "same" {"Splash Page" "Splash Page#img"} }
   { rank = "same" {PDF HTML} }
 }
