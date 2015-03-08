@@ -48,6 +48,17 @@ Features are:
 
 Resource types are inferred from the node names. There is not any consistency checking with the types specified in links to these nodes.
 
+## Installation
+
+The `negotiator` and `pydot` packages are required, and may be installed with:
+
+```
+> pip install negotiator
+> pip install pydot
+```
+
+(There is also a stub of `setup.py` with these dependencies so can so `python setup.py install`, perhaps needing `sudo` depending on your setup.)
+
 ## Running `graphserver.py`
 
 In case there have been any changes to the `*.dot` files, run `make` to build the `*.svg` output. The run `./graphserver.py` read the `*.dot` files and start a server at <http://localhost:9876/>:
