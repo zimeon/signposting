@@ -1,0 +1,17 @@
+digraph VIVO_PERSON {
+    labelloc="t"
+    nodesep=0.5
+    label="VIVO resource and link structure for a Person with HTML & RDF\n(black=current, red=suggested)\n\n";
+    Person [ label="Person\n/individual/individual24416", style=filled ]
+    HTML [ label="HTML\n/display/individual24416" ]
+    RDF [ label="RDF\n/individual/individual24416/individual24416.rdf" ]
+    //
+    Person -> RDF [ style=dashed, label="conneg 303\napplication/rdf+xml" ]
+    Person -> HTML [ style=dashed, label="conneg 303\ntext/html" ]
+    HTML -> RDF [ label="HTML linktag rel=alternate\napplication/rdf+xml" ]
+    // Proposed
+    HTML -> RDF [ label="HTTP Link rel=alternate\napplication/rdf+xml" color=red ]
+    HTML -> Person [ label="HTTP Link\nrel=canonical" color=red ]
+    RDF -> Person [ label="HTTP Link\nrel=canonical" color=red ]
+    { rank=same HTML RDF }
+}

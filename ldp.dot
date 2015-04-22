@@ -1,0 +1,4 @@
+digraph LDP {
+  LDP_RS1 -> LDP_NR1 [ label="RDF\ndescribes" ]
+  LDP_NR1 -> LDP_RS1 [ label="HTTP Link\nrel=describedby" ]
+}
