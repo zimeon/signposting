@@ -7,6 +7,9 @@ import os.path
 import pydot
 import re
 
+class BadEdge(Exception):
+    pass
+
 """A node that represents a web resource
 
 Has a name (relative URI), possibly conneg rules
@@ -20,6 +23,7 @@ class Node(object):
         self.conneg = {}
         self.links = []
         self.html_links = []
+        self.html_linktags = []
         self.html_imgs = []
 
 """A node-oriented view of a GraphViz graph for modeling web resources
@@ -51,39 +55,73 @@ class Graph(object):
             node = self.add_node(n.get_name())
             
         self.log.info("edges:")
-        conneg_default = True #first conneg edge will be default
+        self.conneg_default = True #first conneg edge will be default
         for e in self.g.get_edges():
-            src = self.add_node(e.get_source())
-            dst_name = self.add_node(e.get_destination()).name
-            label = self.normalize_label(e.get_label())
-            m = re.match( r'conneg(\s+(\d+))?(\s+(\S+))?', label )
-            if (m):
-                if (m.group(4) is None):
-                    self.log.info("Bad conneg label: %s" % (label))
-                else:
-                    code = int(m.group(2))
-                    content_type = m.group(4)
-                    self.log.info("%s conneg %s, %d -> %s" % (src.name, content_type, code, dst_name))
-                    src.conneg[content_type] = [code,dst_name,conneg_default]
-                    conneg_default = False
-            elif (re.match('html\s+link',label,re.I)):
-                src.html_links.append(dst_name)
-            elif (re.match('html\s+img',label,re.I)):
-                src.html_imgs.append(dst_name)
-            else:
-                # assume space separated set of links (last word might me mime type)
-                words = label.split()
-                mime_type = None
-                if (re.match(r'\w+/\w+$',words[-1])):
-                    mime_type = words.pop()
-                for rel in words:
-                    self.log.info("%s rel=\"%s\" %s %s" % (src.name,rel,dst_name,mime_type))
-                    src.links.append([rel,dst_name,mime_type])
+            try:
+                self.parse_edge(e)
+            except BadEdge as e:
+                self.log.error("Bad edge: %s" % str(e))
+        # Do we have an svg file for this graph?
+        svg_file = os.path.splitext(file)[0] + '.svg'
+        if (os.path.exists(svg_file)):
+            self.svg=svg_file
 
-            # Do we have an svg file for this graph?
-            svg_file = os.path.splitext(file)[0] + '.svg'
-            if (os.path.exists(svg_file)):
-                self.svg=svg_file
+    def parse_edge(self,e):
+        src = self.add_node(e.get_source())
+        dst_name = self.add_node(e.get_destination()).name
+        label = self.normalize_label(e.get_label())
+        words = label.split()
+        if (len(words)<1):
+            raise BadEdge("Must have at least 1 word: %s" % label)
+        # If the first word is html or http then expect qualifier
+        link_type = words.pop(0).lower()
+        if (link_type=='html' or link_type=='http' and len(words)>0):
+            link_type+=' '+words.pop(0).lower()
+        # If we have just rel= then assume HTTP Link
+        if (re.match(r'rel=',link_type)):
+            words.insert(0,link_type)
+            link_type='http link'
+        # Now have type, rest depends on that
+        if (link_type=='conneg'):
+            if (len(words)!=2):
+                raise BadEdge("Bad conneg label: %s" % (label))
+            code = int(words[0])
+            content_type = words[1]
+            self.log.info("%s conneg %s, %d -> %s" % (src.name, content_type, code, dst_name))
+            src.conneg[content_type] = [code,dst_name,self.conneg_default]
+            self.conneg_default = False
+        elif (link_type=='html link'):
+            src.html_links.append(dst_name)
+        elif (link_type=='html img'):
+            src.html_imgs.append(dst_name)
+        elif (link_type=='html linktag'):
+            rel = self.normalize_rel(words[0])
+            mime_type = words[1]
+            self.log.info("%s HTML linktag rel=\"%s\" %s %s" % (src.name,rel,dst_name,mime_type))
+            src.html_linktags.append([rel,dst_name,mime_type])
+        elif (link_type=='http link'):
+            mime_type = None
+            if (len(words)==2):
+                # second is MIME type
+                mime_type = words.pop()
+                if (not re.match(r'\w+/[\w\+]+$',mime_type)):
+                    raise BadEdge("Bad MIME type '%s' in %s" % (mime_type,label))
+            elif (len(words)!=1):
+                raise BadEdge("Bad HTTP Link: %s" % (label))
+            rel = self.normalize_rel(words[0])
+            self.log.info("%s rel=\"%s\" %s %s" % (src.name,rel,dst_name,mime_type))
+            src.links.append([rel,dst_name,mime_type])
+        elif (len(words)>1):
+            # assume space separated set of links (last word might me mime type)
+            mime_type = None
+            if (re.match(r'\w+/[\w\+]+$',words[-1])):
+                mime_type = words.pop()
+            for rel in words:
+                rel = self.normalize_rel(rel)
+                self.log.info("%s rel=\"%s\" %s %s" % (src.name,rel,dst_name,mime_type))
+                src.links.append([rel,dst_name,mime_type])
+        else:
+            raise BadEdge("Unrecognized edge: %s" % label)
 
     def add_node(self, node_name):
         """Normalize name and add if not already present, return normalized name
@@ -122,6 +160,15 @@ class Graph(object):
         name = re.sub( r'"', '', name )
         name = re.sub( r'\\n', ' ', name )
         return(name)
+
+    def normalize_rel(self,rel):
+        """Normalize relation
+
+        Accept single relation or rel="relation" forms to return relation
+        """
+        rel = re.sub( r'"', '', rel )
+        rel = re.sub( r'rel=', '', rel )
+        return(rel)
 
     def __str__(self):
         return self.g.to_string()

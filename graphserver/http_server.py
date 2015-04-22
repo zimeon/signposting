@@ -180,7 +180,7 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         egn = cgi.escape(graph.name)
         content += '<body>\n<h1>Scenario: %s</h1>\n\n' % (egn)
         if (graph.svg):
-            content += '<object type="image/svg+xml" data="/%s/svg">Your browser does not support SVG</object>\n' % (graph.name)
+            content += '<object style="font-size: 50%%;" type="image/svg+xml" data="/%s/svg">Your browser does not support SVG</object>\n' % (graph.name)
         content += '<ul>\n'
         for node_name in sorted(graph.nodes):
             n = graph.nodes[node_name]
@@ -202,6 +202,7 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if (node.mime_type == 'text/html'):
             self.content="<html>\n<head>\n<title>%s</title>\n" % (node.name)
             self.content+='<link rel="stylesheet" href="/css/graphserver.css">\n</head>\n'
+            self.content+=self.node_html_linktags(node)
             self.content+="<body>\n<h1>%s</h1>\n" % (node.name)
             self.content+=self.node_html_links_imgs(node)
             self.content+="<pre>\n"
@@ -240,8 +241,10 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         info += "mime_type: %s\n" % str(node.mime_type)
         info += "conneg: %s\n" % str(node.conneg)
         info += "links: %s\n" % str(node.links)
-        #info += "html_links: %s\n" % str(node.html_links)
-        #info += "html_imgs: %s\n" % str(node.html_imgs)
+        if (node.mime_type=="text/html"):
+            info += "html_linktags: %s\n" % str(node.html_linktags)
+            info += "html_links: %s\n" % str(node.html_links)
+            info += "html_imgs: %s\n" % str(node.html_imgs)
         return(info)
 
     def node_html_links_imgs(self, node):
@@ -257,6 +260,14 @@ class GSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             return("<p>Images included:</p>\n<ul>\n"+html+"</ul>\n")
         else:
             return("")        
+
+    def node_html_linktags(self, node):
+        """Return HTML <meta> elements as string for this node"""
+        html = ''
+        for (rel,dst_name,mime_type) in node.html_linktags:
+            mime_str = '' if (mime_type is None) else ' type="%s"' % mime_type
+            html += '<link rel="%s" href="%s"%s/>\n' % (rel,dst_name,mime_str)
+        return(html)
 
     def node_html_links(self, node):
         """Return HTML <ul> list of HTML links for this node"""
