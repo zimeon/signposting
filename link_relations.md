@@ -2,11 +2,11 @@
 
 ## Background, semantics and corresponding URI form
 
-IANA, "Link Relations", <http://www.iana.org/assignments/link-relations/link-relations.xhtml> are defined by [RFC5988](http://tools.ietf.org/html/rfc5988). Link headers are explicitly defined to be semantically equivalent to HTML `\<link\>` elements ([RFC5988 section 5](http://tools.ietf.org/html/rfc5988#section-5)):
+IANA, "Link Relations", <http://www.iana.org/assignments/link-relations/link-relations.xhtml> are defined by [RFC5988](http://tools.ietf.org/html/rfc5988). Link headers are explicitly defined to be semantically equivalent to HTML `<link>` elements ([RFC5988 section 5](http://tools.ietf.org/html/rfc5988#section-5)):
 
 > The Link entity-header field provides a means for serialising one or
 > more links in HTTP headers.  It is semantically equivalent to the
-> `\<LINK\>` element in HTML, as well as the `atom:link` feed-level element
+> `<LINK>` element in HTML, as well as the `atom:link` feed-level element
 > in Atom [RFC4287](http://tools.ietf.org/html/rfc4287).
 
 In Appendix B the URI prefix `http://www.iana.org/assignments/relation/` is specified to convert the relation types to absolute URIs whit noting that in Link headers they should be expressed in the registered form:
@@ -60,4 +60,6 @@ Section 2.2 of the [Memento RFC7089](http://tools.ietf.org/html/rfc7089#section-
 
 ## Proposed link relations
 
-*convertedFrom* - The draft ['XML2RFC' version 3 Vocabulary](https://tools.ietf.org/html/draft-hoffman-xml2rfc-16#section-6.2) seeks to register a `convertedFrom` relation.
+*convertedFrom* --< The draft ['XML2RFC' version 3 Vocabulary](https://tools.ietf.org/html/draft-hoffman-xml2rfc-16#section-6.2) seeks to register a `convertedFrom` relation.
+
+*service-doc* and *service-desc* -- Proposed [Link Relation Types for Web Services](http://tools.ietf.org/html/draft-wilde-service-link-rel-00)
