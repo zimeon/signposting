@@ -30,7 +30,7 @@ prefix iana: <http://www.iana.org/assignments/link-relations/> .
 
 ### Preferred and alternate versions
 
-*canonical* -- _"Designates the preferred version of a resource (the IRI and its contents)."_ Specified in [RFC6596](http://tools.ietf.org/html/rfc6596) where the suggested behavior of consuming applications is described as _"applications such as search engines can focus processing on the canonical, and references to the context (referring) IRI can be updated to reference the target (canonical) IRI"._
+*canonical* -- _"Designates the preferred version of a resource (the IRI and its contents)."_ Specified in [RFC6596](http://tools.ietf.org/html/rfc6596) where the suggested behavior of consuming applications is described as _"applications such as search engines can focus processing on the canonical, and references to the context (referring) IRI can be updated to reference the target (canonical) IRI"._ It does not make sense to have more than one `canonical` link from a resource.
 
 *alternate* -- _"Refers to a substitute for this context"_ and is defined as part of [HTML5](http://www.w3.org/TR/html5/links.html#rel-alternate) and is explicitly defined as transitive. This seems to be the appropriate relation for versions of an object in different formats such as HTML, PDF and PostScript versions of an article.
 
@@ -58,8 +58,8 @@ Section 2.2 of the [Memento RFC7089](http://tools.ietf.org/html/rfc7089#section-
 
 *memento* -- _"A link with a "memento" Relation Type is used to point from a TimeGate or a Memento for an Original Resource, as well as from the Original Resource itself, to a Memento for the Original Resource."_
 
-## Proposed link relations
+## Proposed link relations of possible interest
 
-*convertedFrom* --< The draft ['XML2RFC' version 3 Vocabulary](https://tools.ietf.org/html/draft-hoffman-xml2rfc-16#section-6.2) seeks to register a `convertedFrom` relation.
+*convertedFrom* -- The draft ['XML2RFC' version 3 Vocabulary](https://tools.ietf.org/html/draft-hoffman-xml2rfc-16#section-6.2) seeks to register a `convertedFrom` relation.
 
 *service-doc* and *service-desc* -- Proposed [Link Relation Types for Web Services](http://tools.ietf.org/html/draft-wilde-service-link-rel-00)
