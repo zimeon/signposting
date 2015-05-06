@@ -32,4 +32,5 @@ We are moving to a world with most scholarly information on the web and toward c
 
   * [Scenarios with possible link patterns](scenarios.md)
   * [Playpen for exploring scenarios](graphserver.md)
+  * [Relevant link relations and their semantics](link_relations.md)
 
